@@ -120,6 +120,13 @@
 // Math Item Environment (Unified Counter, Left-Stripe, Generous Spacing)
 // -----------------------------------------------------------------------------
 
+/// Unified numbering function for mathematical environments and references.
+#let _math-item-numbering(..nums) = {
+  let hdgs = counter(heading).get()
+  let prefix = if hdgs.len() > 0 and hdgs.first() > 0 { str(hdgs.first()) + "." } else { "" }
+  prefix + nums.pos().map(str).join(".")
+}
+
 /// Common layout function for theorem-like environments.
 /// All environments share the "math-item" figure kind, guaranteeing a single
 /// coherent counter across definitions, theorems, lemmas, and examples.
@@ -142,10 +149,12 @@
   }
 
   let breakable = if "breakable" in named { named.at("breakable") } else { true }
+  let item-numbering = if "numbering" in named { named.at("numbering") } else { _math-item-numbering }
   
   figure(
     kind: "math-item",
     supplement: context tr-type(type-name),
+    numbering: item-numbering,
     caption: title,
     outlined: false,
     block(
@@ -162,10 +171,7 @@
           below: 0.6em,
           context {
             let label-text = tr-type(type-name)
-            let num = counter(figure.where(kind: "math-item")).get().first()
-            let hdgs = counter(heading).get()
-            let prefix = if hdgs.len() > 0 { str(hdgs.first()) + "." } else { "" }
-            let full-num = prefix + str(num)
+            let full-num = counter(figure.where(kind: "math-item")).display(item-numbering)
             text(weight: "bold", fill: stroke-color)[#label-text #full-num]
             if title != none [
               #h(0.35em)
@@ -622,7 +628,7 @@
         let num = counter(figure.where(kind: "math-item")).at(loc).first()
         let hdgs = counter(heading).at(loc)
         let sec-num = if hdgs.len() > 0 { str(hdgs.first()) } else { "0" }
-        let full-num = sec-num + "." + str(num)
+        let full-num = if hdgs.len() > 0 and hdgs.first() > 0 { sec-num + "." + str(num) } else { str(num) }
 
         // Chapter grouping header with elegant hairline divider
         if sec-num != current-sec {
