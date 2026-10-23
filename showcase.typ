@@ -32,13 +32,13 @@
 
 = Homotopie und die Fundamentalgruppe
 
-Die algebraische Topologie untersucht topologische Räume, indem sie ihnen algebraische Invarianten wie Gruppen, Ringe oder Moduln zuordnet. Das fundamentale Prinzip besteht darin, kontinuierliche geometrische Phänomene in diskrete, algebraisch berechenbare Strukturen zu übersetzen. Die grundlegendste dieser Invarianten ist die *Fundamentalgruppe* $pi_1(X, x_0)$ #notate($pi_1(X, x_0)$, [Fundamentalgruppe des Raumes $(X, x_0)$]) #idx("Fundamentalgruppe"), die von Henri Poincaré 1895 eingeführt wurde und geschlossene Schleifen bis auf stetige Deformation klassifiziert.
+Die algebraische Topologie untersucht topologische Räume #idx([Raum], [topologischer]), indem sie ihnen algebraische Invarianten wie Gruppen #idx([Gruppe], [abelsche]), Ringe oder Moduln zuordnet. Das fundamentale Prinzip besteht darin, kontinuierliche geometrische Phänomene in diskrete, algebraisch berechenbare Strukturen zu übersetzen. Die grundlegendste dieser Invarianten ist die *Fundamentalgruppe* $pi_1(X, x_0)$ #notate($pi_1(X, x_0)$, [Fundamentalgruppe des Raumes $(X, x_0)$]) #idx("Fundamentalgruppe"), die von Henri Poincaré 1895 eingeführt wurde und geschlossene Schleifen bis auf stetige Deformation klassifiziert #idx([Deformation], [stetige]).
 
 == Homotopie von Wegen
 
 #definition(title: "Weg und geschlossene Kurve")[
   Sei $X$ ein topologischer Raum und $I = [0, 1] subset.eq RR$ #notate($I$, [Einheitsintervall $[0, 1] subset.eq RR$]) das Einheitsintervall.
-  + Eine stetige Abbildung $gamma: I -> X$ heißt *Weg* (oder Pfad) #idx("Weg") in $X$ von $x_0 := gamma(0)$ nach $x_1 := gamma(1)$.
+  + Eine stetige Abbildung $gamma: I -> X$ heißt *Weg* (oder Pfad) #idx("Weg") #idx([Abbildung], [stetige]) in $X$ von $x_0 := gamma(0)$ nach $x_1 := gamma(1)$.
   + Gilt $gamma(0) = gamma(1)$, so heißt $gamma$ eine *Schleife* #idx("Schleife") (oder *geschlossene Kurve*#idx("Kurve", sub: "geschlossene")) mit Basispunkt $x_0$ #idx("Basispunkt").
 ] <def:path>
 
@@ -74,11 +74,11 @@ Die algebraische Topologie untersucht topologische Räume, indem sie ihnen algeb
         H_2(s, 2t - 1) & "für" 1/2 <= t <= 1.
       )
     $
-    Nach dem Verklebelemma ist $H$ stetig, womit $gamma_0 tilde.equiv_"rel" gamma_2$ gezeigt ist.
+    Nach dem Verklebelemma #idx("Verklebelemma") ist $H$ stetig, womit $gamma_0 tilde.equiv_"rel" gamma_2$ gezeigt ist.
 ]
 
 #example(title: "Konvexe Teilmengen des Euklidischen Raums")[
-  Sei $X subset.eq RR^n$ eine konvexe Teilmenge #idx("Konvexe Menge"). Seien $gamma_0, gamma_1: I -> X$ zwei beliebige Wege mit $gamma_0(0) = gamma_1(0)$ und $gamma_0(1) = gamma_1(1)$. Dann ist die lineare Verbindungshomotopie
+  Sei $X subset.eq RR^n$ eine konvexe Teilmenge #idx("Konvexe Menge"). Seien $gamma_0, gamma_1: I -> X$ zwei beliebige Wege mit $gamma_0(0) = gamma_1(0)$ und $gamma_0(1) = gamma_1(1)$. Dann ist die lineare Verbindungshomotopie #idx("Verbindungshomotopie")
   $
     H(s, t) := (1 - t) gamma_0(s) + t gamma_1(s)
   $
@@ -86,7 +86,7 @@ Die algebraische Topologie untersucht topologische Räume, indem sie ihnen algeb
 ] <ex:convex>
 
 #remark[
-  Die Äquivalenzklasse eines Weges $gamma$ unter Homotopie bezeichnen wir mit $[gamma]$ #notate($[gamma]$, [Homotopieklasse des Weges $gamma$]). Gemäß @prop:equiv und @ex:convex besitzt in $RR^n$ jede Schleife dieselbe Homotopieklasse wie die konstante Schleife $c_(x_0)(s) = x_0$.
+  Die Äquivalenzklasse eines Weges $gamma$ unter Homotopie bezeichnen wir mit $[gamma]$ #notate($[gamma]$, [Homotopieklasse des Weges $gamma$]). Gemäß @prop:equiv und @ex:convex besitzt in $RR^n$ jede Schleife dieselbe Homotopieklasse wie die konstante Schleife $c_(x_0)(s) = x_0$. Für Hausdorff-Räume #idx("Hausdorff-Raum") sichert dies eine eindeutige Grenzpunktbildung.
 ]
 
 #cetz.canvas({
@@ -127,7 +127,7 @@ In diesem Abschnitt berechnen wir die erste nichttriviale Fundamentalgruppe: die
   ]
 
   #subproof[
-    Die Aussage folgt durch Lebesgue-Zerteilen des Intervalls $I$ in kleine Teilintervalle $[t_k, t_(k+1)]$, deren Bilder in gleichmäßig überdeckten offenen Umgebungen von $S^1$ liegen, und sukzessiver Fortsetzung über die lokalen Homöomorphismus-Blätter.
+    Die Aussage folgt durch Lebesgue-Zerteilen (Lebesgue-Zahl #idx("Lebesgue-Zahl")) des Intervalls $I$ in kleine Teilintervalle $[t_k, t_(k+1)]$, deren Bilder in gleichmäßig überdeckten offenen Umgebungen #idx([Umgebung], [offene]) von $S^1$ liegen, und sukzessiver Fortsetzung über die lokalen Homöomorphismus-Blätter.
   ]
 
   Ist $gamma$ eine Schleife mit $gamma(0) = gamma(1) = 1$, so wähle den Lift $tilde(gamma)$ mit $tilde(gamma)(0) = 0$. Dann ist $p(tilde(gamma)(1)) = gamma(1) = 1$, woraus $tilde(gamma)(1) in ZZ$ folgt.
@@ -135,7 +135,7 @@ In diesem Abschnitt berechnen wir die erste nichttriviale Fundamentalgruppe: die
   $
     Phi: pi_1(S^1, 1) -> ZZ, quad [gamma] |-> tilde(gamma)(1)
   $
-  ist wohldefiniert, ein Gruppenhomomorphismus und bijektiv.
+  ist wohldefiniert, ein Gruppenhomomorphismus und Isomorphismus #idx("Isomorphismus").
 ]
 
 #corollary(title: "Fundamentalsatz der Algebra")[
@@ -143,12 +143,12 @@ In diesem Abschnitt berechnen wir die erste nichttriviale Fundamentalgruppe: die
 ] <cor:fta>
 
 #lemma(title: "Nichtexistenz einer Retraktion")[
-  Es existiert keine stetige Retraktion $r: D^2 -> S^1$ #idx("Retraktion") von der zweidimensionalen Kreisscheibe $D^2$ #notate($D^n$, [$n$-dimensionaler abgeschlossener Einheitsball]) auf ihren Rand $partial D^2$ #notate($partial M$, [Topologischer Rand einer Mannigfaltigkeit $M$]).
+  Es existiert keine stetige Retraktion $r: D^2 -> S^1$ #idx("Retraktion") #idx("Deformationsretrakt") von der zweidimensionalen Kreisscheibe $D^2$ #notate($D^n$, [$n$-dimensionaler abgeschlossener Einheitsball]) #idx([Kreisscheibe], [$D^2$]) #idx([Ball], [$n$-dimensionaler]) auf ihren Rand $partial D^2$ #notate($partial M$, [Topologischer Rand einer Mannigfaltigkeit $M$]).
 ] <lem:no-retract>
 
 == Kommutative Diagramme in der Topologie
 
-In der algebraischen Topologie werden Zusammenhänge systematisch über Funktoren und exakte Sequenzen beschrieben. Mit dem eingebundenen `fletcher`-Paket lassen sich kommutative Diagramme direkt darstellen:
+In der algebraischen Topologie werden Zusammenhänge systematisch über Funktoren und exakte Sequenzen #idx("Exakte Sequenz") (wie die Mayer-Vietoris-Sequenz #idx("Mayer-Vietoris-Sequenz")) beschrieben. Dies verallgemeinert sich auf CW-Komplexe #idx([CW-Komplex]), Tori $T^2$ #idx([Torus], [$T^2$]), Produkt- #idx([Produktraum]) und Quotientenräume #idx("Quotientenraum"), Simplizialkomplexe #idx([Simplizialkomplex]) mit Standard-Simplizes #idx([Standard-Simplex], [$Delta^n$]) sowie die Berechnung der Euler-Charakteristik #idx("Euler-Charakteristik"). Mit dem eingebundenen `fletcher`-Paket lassen sich kommutative Diagramme direkt darstellen:
 
 #align(center)[
   #diagram(
@@ -168,7 +168,9 @@ In der algebraischen Topologie werden Zusammenhänge systematisch über Funktore
   )
 ]
 
-Obiges Diagramm stellt das kanonische Pushout-Quadrat #idx("Pushout") im *Satz von Seifert-van Kampen* #idx("Satz von Seifert-van Kampen") dar.
+Obiges Diagramm stellt das kanonische Pushout-Quadrat #idx("Pushout") im *Satz von Seifert-van Kampen* #idx("Satz von Seifert-van Kampen") dar. Verwandte Resultate wie der Jordan-Kurvensatz #idx("Jordan-Kurvensatz") beruhen auf ähnlichen Zerlegungen unter Kompaktheit #idx([Kompaktheit]) und Wegezusammenhang #idx([Zusammenhang], [Wegezusammenhang]).
+
+#lecture-break(12, 13, date: datetime(year: 2026, month: 11, day: 11))
 
 == Verweise und Konsistenzprüfung
 
