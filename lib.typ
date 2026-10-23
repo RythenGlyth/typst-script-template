@@ -492,12 +492,60 @@
 // Alphabetical Subject Index (Stichwortverzeichnis)
 // -----------------------------------------------------------------------------
 
+/// Recursively extracts a plain text representation from content, string, or symbol for sorting and grouping.
+#let _to-string(it) = {
+  if it == none {
+    ""
+  } else if type(it) == str {
+    it
+  } else if type(it) == symbol {
+    str(it)
+  } else if type(it) == content {
+    if it.func() == [ ].func() {
+      " "
+    } else if it.has("text") {
+      it.text
+    } else if it.has("body") {
+      _to-string(it.body)
+    } else if it.has("children") {
+      it.children.map(_to-string).join("")
+    } else if it.has("base") {
+      let res = _to-string(it.base)
+      if it.has("b") { res += _to-string(it.b) }
+      if it.has("t") { res += _to-string(it.t) }
+      res
+    } else if it.has("child") {
+      _to-string(it.child)
+    } else {
+      let res = ""
+      for (k, v) in it.fields() {
+        if type(v) == content or type(v) == str {
+          res += _to-string(v)
+        }
+      }
+      if res == "" { repr(it) } else { res }
+    }
+  } else {
+    str(it)
+  }
+}
+
 /// Registers an entry in the alphabetical subject index (Stichwortverzeichnis).
-/// Supports primary terms and optional sub-terms:
-/// e.g. #idx("Homotopie") or #idx("Homotopie", sub: "von Wegen")
-#let idx(term, sub: none) = [
-  #metadata((term: term, sub: sub)) <subject-index-item>
-]
+/// Accepts strings or content for primary terms and optional sub-terms:
+/// e.g. #idx("Homotopie"), #idx("Homotopie", sub: "von Wegen"),
+/// or #idx([Trennungsaxiom], [$T_2$]).
+#let idx(term, ..args) = {
+  let named = args.named()
+  let pos = args.pos()
+  let sub = if "sub" in named {
+    named.at("sub")
+  } else if pos.len() > 0 {
+    pos.first()
+  } else {
+    none
+  }
+  [#metadata((term: term, sub: sub)) <subject-index-item>]
+}
 
 /// Generates an alphabetical Subject Index (Stichwortverzeichnis).
 /// Automatically collects all `#idx(...)` tags, groups them by initial letter
@@ -518,30 +566,43 @@
         let p = it.location().page()
         let loc = it.location()
 
-        if term not in index-dict {
-          index-dict.insert(term, (pages: (), subs: (:)))
+        let term-key = _to-string(term).trim()
+        if term-key == "" { continue }
+
+        if term-key not in index-dict {
+          index-dict.insert(term-key, (
+            display: term,
+            pages: (),
+            subs: (:),
+          ))
         }
 
-        let entry = index-dict.at(term)
+        let entry = index-dict.at(term-key)
         if sub == none {
           if p not in entry.pages.map(x => x.page) {
             entry.pages.push((page: p, loc: loc))
           }
         } else {
-          if sub not in entry.subs {
-            entry.subs.insert(sub, ())
-          }
-          let sub-pages = entry.subs.at(sub)
-          if p not in sub-pages.map(x => x.page) {
-            sub-pages.push((page: p, loc: loc))
-            entry.subs.insert(sub, sub-pages)
+          let sub-key = _to-string(sub).trim()
+          if sub-key != "" {
+            if sub-key not in entry.subs {
+              entry.subs.insert(sub-key, (
+                display: sub,
+                pages: (),
+              ))
+            }
+            let sub-entry = entry.subs.at(sub-key)
+            if p not in sub-entry.pages.map(x => x.page) {
+              sub-entry.pages.push((page: p, loc: loc))
+              entry.subs.insert(sub-key, sub-entry)
+            }
           }
         }
-        index-dict.insert(term, entry)
+        index-dict.insert(term-key, entry)
       }
 
       let clean-sort-key(k) = {
-        lower(k.replace("Ä", "A").replace("ä", "a")
+        lower(str(k).replace("Ä", "A").replace("ä", "a")
          .replace("Ö", "O").replace("ö", "o")
          .replace("Ü", "U").replace("ü", "u")
          .replace("ß", "ss"))
@@ -550,8 +611,10 @@
 
       columns(num-columns)[
         #let current-letter = none
-        #for term in sorted-terms {
-          let first-char = term.clusters().first()
+        #for term-key in sorted-terms {
+          let clusters = term-key.clusters()
+          if clusters.len() == 0 { continue }
+          let first-char = clusters.first()
           let letter = if first-char in ("Ä", "ä") { "A" }
             else if first-char in ("Ö", "ö") { "O" }
             else if first-char in ("Ü", "ü") { "U" }
@@ -565,19 +628,21 @@
             v(0.4em, weak: true)
           }
 
-          let data = index-dict.at(term)
+          let data = index-dict.at(term-key)
           let page-links = if data.pages.len() > 0 {
             data.pages.map(p-data => link(p-data.loc)[#text(fill: col-link, weight: "medium")[#p-data.page]]).join(", ")
           } else { none }
 
           block(spacing: 0.65em)[
-            #text(weight: "medium", fill: rgb("#1f2937"))[#term]
+            #text(weight: "medium", fill: rgb("#1f2937"))[#data.display]
             #if page-links != none [ #h(0.35em) #page-links ]
             #if data.subs.len() > 0 {
               v(0.2em, weak: true)
-              for (sub-term, sub-pages) in data.subs {
-                let sub-links = sub-pages.map(p-data => link(p-data.loc)[#text(fill: col-link, weight: "medium")[#p-data.page]]).join(", ")
-                [#h(1.2em)#text(fill: rgb("#475569"))[– #sub-term] #h(0.3em) #sub-links \ ]
+              let sorted-sub-keys = data.subs.keys().sorted(key: clean-sort-key)
+              for sub-key in sorted-sub-keys {
+                let sub-entry = data.subs.at(sub-key)
+                let sub-links = sub-entry.pages.map(p-data => link(p-data.loc)[#text(fill: col-link, weight: "medium")[#p-data.page]]).join(", ")
+                [#h(1.2em)#text(fill: rgb("#475569"))[– #sub-entry.display] #h(0.3em) #sub-links \ ]
               }
             }
           ]

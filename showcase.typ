@@ -109,7 +109,7 @@ Die algebraische Topologie untersucht topologische Räume, indem sie ihnen algeb
 
 = Die Fundamentalgruppe des Kreises
 
-In diesem Abschnitt berechnen wir die erste nichttriviale Fundamentalgruppe: die des Kreises $S^1$ #notate($S^n$, [$n$-dimensionale Einheitssphäre]) #idx("Sphäre", sub: "1-Sphäre (Kreis)"). Die Methode beruht auf der Theorie der *Überlagerungen* #idx("Überlagerung"), die ein tiefes Zusammenspiel zwischen Analysis (Wegeliftung) und Gruppentheorie herstellt.
+In diesem Abschnitt berechnen wir die erste nichttriviale Fundamentalgruppe: die des Kreises $S^1$ #notate($S^n$, [$n$-dimensionale Einheitssphäre]) #idx("Sphäre", sub: "1-Sphäre (Kreis)"). Die Methode beruht auf der Theorie der *Überlagerungen* #idx("Überlagerung"), die ein tiefes Zusammenspiel zwischen Analysis (Wegeliftung) und Gruppentheorie herstellt (wobei alle beteiligten Räume das Hausdorffsche Trennungsaxiom #idx([Trennungsaxiom], [$T_2$]) erfüllen).
 
 #theorem(title: "Fundamentalgruppe der 1-Sphäre")[
   Die Fundamentalgruppe des Kreises $S^1$ ist unendlich zyklisch und isomorph zu den ganzen Zahlen:
