@@ -24,6 +24,99 @@
 #let col-link       = rgb("#1d4ed8") // Blue link color
 
 // -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// Internationalization (i18n) Support
+// -----------------------------------------------------------------------------
+
+#let _translations = (
+  "de": (
+    "definition": "Definition",
+    "theorem": "Satz",
+    "lemma": "Lemma",
+    "proposition": "Proposition",
+    "corollary": "Korollar",
+    "example": "Beispiel",
+    "remark": "Bemerkung",
+    "construction": "Konstruktion",
+    "intuition": "Geometrische Intuition",
+    "proof": "Beweis",
+    "claim": "Behauptung",
+    "subproof": "Beweis der Behauptung",
+    "lecture": "Vorlesung",
+    "lecture-end": "Ende der Vorlesung",
+    "toc": "Inhaltsverzeichnis",
+    "preface": "Vorwort",
+    "default-title": "Vorlesungsskript",
+    "notation-index": "Symbol- und Notationsverzeichnis",
+    "symbol": "Symbol",
+    "description": "Bedeutung / Beschreibung",
+    "page": "Seite",
+    "no-notations": "Keine Notationen erfasst.",
+    "subject-index": "Stichwortverzeichnis",
+    "no-subjects": "Keine Einträge im Stichwortverzeichnis vorhanden.",
+  ),
+  "en": (
+    "definition": "Definition",
+    "theorem": "Theorem",
+    "lemma": "Lemma",
+    "proposition": "Proposition",
+    "corollary": "Corollary",
+    "example": "Example",
+    "remark": "Remark",
+    "construction": "Construction",
+    "intuition": "Geometric Intuition",
+    "proof": "Proof",
+    "claim": "Claim",
+    "subproof": "Proof of Claim",
+    "lecture": "Lecture",
+    "lecture-end": "End of Lecture",
+    "toc": "Table of Contents",
+    "preface": "Preface",
+    "default-title": "Lecture Notes",
+    "notation-index": "List of Symbols and Notation",
+    "symbol": "Symbol",
+    "description": "Description / Meaning",
+    "page": "Page",
+    "no-notations": "No notations recorded.",
+    "subject-index": "Subject Index",
+    "no-subjects": "No entries in the subject index.",
+  ),
+)
+
+#let _type-keys = (
+  "definition": "definition",
+  "satz": "theorem",
+  "theorem": "theorem",
+  "lemma": "lemma",
+  "proposition": "proposition",
+  "korollar": "corollary",
+  "corollary": "corollary",
+  "beispiel": "example",
+  "example": "example",
+  "bemerkung": "remark",
+  "remark": "remark",
+  "konstruktion": "construction",
+  "construction": "construction",
+)
+
+/// Retrieves a localized string for the specified translation key.
+#let tr(key, lang: auto) = {
+  let l = if lang != auto { lang } else { text.lang }
+  let dict = _translations.at(l, default: _translations.at("en"))
+  dict.at(key, default: key)
+}
+
+/// Resolves a mathematical environment type name into the active language.
+#let tr-type(type-name, lang: auto) = {
+  let k = lower(str(type-name))
+  if k in _type-keys {
+    tr(_type-keys.at(k), lang: lang)
+  } else {
+    type-name
+  }
+}
+
 // Math Item Environment (Unified Counter, Left-Stripe, Generous Spacing)
 // -----------------------------------------------------------------------------
 
@@ -52,7 +145,7 @@
   
   figure(
     kind: "math-item",
-    supplement: type-name,
+    supplement: context tr-type(type-name),
     caption: title,
     outlined: false,
     block(
@@ -68,11 +161,12 @@
           sticky: true,
           below: 0.6em,
           context {
+            let label-text = tr-type(type-name)
             let num = counter(figure.where(kind: "math-item")).get().first()
             let hdgs = counter(heading).get()
             let prefix = if hdgs.len() > 0 { str(hdgs.first()) + "." } else { "" }
             let full-num = prefix + str(num)
-            text(weight: "bold", fill: stroke-color)[#type-name #full-num]
+            text(weight: "bold", fill: stroke-color)[#label-text #full-num]
             if title != none [
               #h(0.35em)
               #text(weight: "bold", fill: rgb("#1f2937"))[(#title)]
@@ -92,17 +186,17 @@
 // Concrete Mathematical Environments
 // -----------------------------------------------------------------------------
 
-#let definition(..args) = math-item("Definition", stroke-color: col-definition, ..args)
-#let theorem(..args) = math-item("Satz", stroke-color: col-theorem, ..args)
-#let lemma(..args) = math-item("Lemma", stroke-color: col-lemma, ..args)
-#let proposition(..args) = math-item("Proposition", stroke-color: col-proposition, ..args)
-#let corollary(..args) = math-item("Korollar", stroke-color: col-corollary, ..args)
-#let example(..args) = math-item("Beispiel", stroke-color: col-example, end-symbol: $triangle$, ..args)
-#let remark(..args) = math-item("Bemerkung", stroke-color: col-remark, ..args)
-#let construction(..args) = math-item("Konstruktion", stroke-color: rgb("#78350f"), ..args)
+#let definition(..args) = math-item("definition", stroke-color: col-definition, ..args)
+#let theorem(..args) = math-item("theorem", stroke-color: col-theorem, ..args)
+#let lemma(..args) = math-item("lemma", stroke-color: col-lemma, ..args)
+#let proposition(..args) = math-item("proposition", stroke-color: col-proposition, ..args)
+#let corollary(..args) = math-item("corollary", stroke-color: col-corollary, ..args)
+#let example(..args) = math-item("example", stroke-color: col-example, end-symbol: $triangle$, ..args)
+#let remark(..args) = math-item("remark", stroke-color: col-remark, ..args)
+#let construction(..args) = math-item("construction", stroke-color: rgb("#78350f"), ..args)
 
 // Geometric Intuition block (specially designed for algebraic topology)
-#let intuition(title: "Geometrische Intuition", body) = {
+#let intuition(title: auto, body) = {
   block(
     width: 100%,
     stroke: (left: 2pt + col-intuition),
@@ -111,7 +205,10 @@
     breakable: true,
     spacing: 1.4em,
     [
-      #text(weight: "bold", fill: col-intuition, size: 0.95em)[#title:]
+      #context {
+        let t = if title == auto { tr("intuition") } else { title }
+        text(weight: "bold", fill: col-intuition, size: 0.95em)[#t:]
+      }
       #v(0.3em, weak: true)
       #text(size: 0.95em)[#body]
     ]
@@ -119,14 +216,17 @@
 }
 
 // Formal proof environment with right-aligned Halmos square
-#let proof(title: "Beweis", body) = {
+#let proof(title: auto, body) = {
   v(0.5em, weak: true)
   block(
     width: 100%,
     spacing: 1.2em,
     breakable: true,
     [
-      #text(style: "italic", weight: "medium")[#title.]
+      #context {
+        let t = if title == auto { tr("proof") } else { title }
+        text(style: "italic", weight: "medium")[#t.]
+      }
       #h(0.4em)
       #body
       #place(bottom + right)[$square$]
@@ -147,7 +247,10 @@
     breakable: true,
     spacing: 1em,
     [
-      #text(weight: "bold", fill: rgb("#1e293b"), size: 0.95em)[Behauptung#if title != none [ (#title)]:]
+      #context {
+        let label = tr("claim")
+        text(weight: "bold", fill: rgb("#1e293b"), size: 0.95em)[#label#if title != none [ (#title)]:]
+      }
       #v(0.25em, weak: true)
       #text(size: 0.95em)[#body]
     ]
@@ -156,7 +259,7 @@
 }
 
 // Subproof of a claim inside a proof, indented and ending with a small hollow diamond
-#let subproof(title: "Beweis der Behauptung", body) = {
+#let subproof(title: auto, body) = {
   v(0.3em, weak: true)
   block(
     width: 100%,
@@ -164,7 +267,10 @@
     breakable: true,
     spacing: 0.8em,
     [
-      #text(style: "italic", weight: "medium", fill: rgb("#475569"))[#title:]
+      #context {
+        let t = if title == auto { tr("subproof") } else { title }
+        text(style: "italic", weight: "medium", fill: rgb("#475569"))[#t:]
+      }
       #h(0.35em)
       #text(size: 0.95em)[#body]
       #place(bottom + right)[#text(fill: rgb("#64748b"), size: 0.9em)[$diamond.stroked$]]
@@ -214,11 +320,6 @@
 /// Sits in the left margin directly above a wide rule extending across the page.
 /// Date can be a string or a datetime object (automatically formatted via .display()).
 #let lecture(number, date: none, date-format: auto, outdent: 2.0cm) = {
-  let label-text = if type(number) == str and number.starts-with("Vorlesung") {
-    number
-  } else {
-    [Vorlesung #number]
-  }
   let date-text = format-date(date, format: date-format)
 
   v(1.8em)
@@ -228,12 +329,19 @@
     {
       move(dx: -outdent)[
         #box(width: 100% + outdent * 2)[
-          #grid(
-            columns: (auto, 1fr),
-            align: (bottom + left, bottom + right),
-            text(size: 8.5pt, weight: "bold", fill: rgb("#334155"))[#label-text],
-            if date-text != none { text(size: 8.5pt, fill: rgb("#64748b"))[#date-text] }
-          )
+          #context {
+            let label-text = if type(number) == str and (number.starts-with("Vorlesung") or number.starts-with("Lecture")) {
+              number
+            } else {
+              [#tr("lecture") #number]
+            }
+            grid(
+              columns: (auto, 1fr),
+              align: (bottom + left, bottom + right),
+              text(size: 8.5pt, weight: "bold", fill: rgb("#334155"))[#label-text],
+              if date-text != none { text(size: 8.5pt, fill: rgb("#64748b"))[#date-text] }
+            )
+          }
         ]
       ]
       v(-0.35em)
@@ -251,23 +359,24 @@
 /// Merged transition marker between two lectures.
 /// Displays "Ende der Vorlesung X" above the line, and "Vorlesung Y (Datum)" below the line.
 #let lecture-break(end-number, next-number, date: none, date-format: auto, outdent: 2.0cm) = {
-  let end-label = if type(end-number) == str and (end-number.starts-with("Ende") or end-number.starts-with("Vorlesung")) {
-    if end-number.starts-with("Ende") { end-number } else { [Ende der #end-number] }
-  } else {
-    [Ende der Vorlesung #end-number]
-  }
-  let next-label = if type(next-number) == str and next-number.starts-with("Vorlesung") {
-    next-number
-  } else {
-    [Vorlesung #next-number]
-  }
   let date-text = format-date(date, format: date-format)
 
   v(1.8em)
   block(
     width: 100%,
     breakable: false,
-    {
+    context {
+      let end-label = if type(end-number) == str and (end-number.starts-with("Ende") or end-number.starts-with("End") or end-number.starts-with("Vorlesung") or end-number.starts-with("Lecture")) {
+        if end-number.starts-with("Ende") or end-number.starts-with("End") { end-number } else { [#tr("lecture-end") #end-number] }
+      } else {
+        [#tr("lecture-end") #end-number]
+      }
+      let next-label = if type(next-number) == str and (next-number.starts-with("Vorlesung") or next-number.starts-with("Lecture")) {
+        next-number
+      } else {
+        [#tr("lecture") #next-number]
+      }
+
       move(dx: -outdent)[
         #text(size: 8.5pt, weight: "bold", fill: rgb("#64748b"))[#end-label]
       ]
@@ -293,17 +402,17 @@
 
 /// Standalone end-of-lecture marker (e.g. before semester break).
 #let lecture-end(number, outdent: 2.0cm) = {
-  let end-label = if type(number) == str and (number.starts-with("Ende") or number.starts-with("Vorlesung")) {
-    if number.starts-with("Ende") { number } else { [Ende der #number] }
-  } else {
-    [Ende der Vorlesung #number]
-  }
-
   v(1.8em)
   block(
     width: 100%,
     breakable: false,
-    {
+    context {
+      let end-label = if type(number) == str and (number.starts-with("Ende") or number.starts-with("End") or number.starts-with("Vorlesung") or number.starts-with("Lecture")) {
+        if number.starts-with("Ende") or number.starts-with("End") { number } else { [#tr("lecture-end") #number] }
+      } else {
+        [#tr("lecture-end") #number]
+      }
+
       move(dx: -outdent)[
         #text(size: 8.5pt, weight: "bold", fill: rgb("#334155"))[#end-label]
       ]
@@ -321,24 +430,28 @@
 // -----------------------------------------------------------------------------
 
 /// Standardized table of contents with configurable depth (defaults to 2).
-#let table-of-contents(depth: 2, title: "Inhaltsverzeichnis") = {
-  outline(
-    title: title,
-    depth: depth,
-    indent: auto,
-  )
+#let table-of-contents(depth: 2, title: auto) = {
+  context {
+    let t = if title == auto { tr("toc") } else { title }
+    outline(
+      title: t,
+      depth: depth,
+      indent: auto,
+    )
+  }
 }
 
 /// Renders a dynamic Notation and Symbol Index table.
 /// Automatically queries all `#notate(...)` calls in the document, deduplicates them,
 /// and builds a reference table with page links.
-#let notation-index(title: "Symbol- und Notationsverzeichnis") = {
-  heading(level: 1, numbering: none)[#title]
-  v(0.6em)
+#let notation-index(title: auto) = {
   context {
+    let t = if title == auto { tr("notation-index") } else { title }
+    heading(level: 1, numbering: none)[#t]
+    v(0.6em)
     let items = query(<notation-item>)
     if items.len() == 0 [
-      #text(style: "italic", fill: rgb("#64748b"))[Keine Notationen erfasst.]
+      #text(style: "italic", fill: rgb("#64748b"))[#tr("no-notations")]
     ] else {
       let seen = ()
       let unique-items = ()
@@ -355,7 +468,7 @@
         stroke: none,
         align: (left, left, right),
         table.header(
-          [*Symbol*], [*Bedeutung / Beschreibung*], [*Seite*],
+          [*#tr("symbol")*], [*#tr("description")*], [*#tr("page")*],
         ),
         table.hline(stroke: 0.8pt + col-rule),
         ..unique-items.map(it => (
@@ -383,13 +496,14 @@
 /// Generates an alphabetical Subject Index (Stichwortverzeichnis).
 /// Automatically collects all `#idx(...)` tags, groups them by initial letter
 /// (A, B, C, ...), and renders a clean 2-column directory with direct page links.
-#let subject-index(title: "Stichwortverzeichnis", num-columns: 2) = {
-  heading(level: 1, numbering: none)[#title]
-  v(1.0em)
+#let subject-index(title: auto, num-columns: 2) = {
   context {
+    let t = if title == auto { tr("subject-index") } else { title }
+    heading(level: 1, numbering: none)[#t]
+    v(1.0em)
     let items = query(<subject-index-item>)
     if items.len() == 0 [
-      #text(style: "italic", fill: rgb("#64748b"))[Keine Einträge im Stichwortverzeichnis vorhanden.]
+      #text(style: "italic", fill: rgb("#64748b"))[#tr("no-subjects")]
     ] else {
       let index-dict = (:)
       for it in items {
@@ -547,7 +661,7 @@
 // -----------------------------------------------------------------------------
 
 #let script-doc(
-  title: none,
+  title: auto,
   subtitle: none,
   author: none,
   lecturer: none,
@@ -560,9 +674,15 @@
   hanging-numbers: true,   // Outdents section numbers into left margin
   body,
 ) = {
+  let doc-title = if title == auto {
+    _translations.at(lang, default: _translations.at("en")).at("default-title")
+  } else {
+    title
+  }
+
   // Document metadata
   set document(
-    title: title,
+    title: doc-title,
     author: author,
     date: date,
   )
@@ -602,7 +722,7 @@
         grid(
           columns: (1fr, auto),
           align: (left, right),
-          text(size: 8.5pt, fill: rgb("#64748b"))[#title],
+          text(size: 8.5pt, fill: rgb("#64748b"))[#doc-title],
           if active-heading != none { text(size: 8.5pt, fill: rgb("#64748b"))[#active-heading] }
         )
         v(0.4em)
@@ -686,7 +806,7 @@
   // --- Title Page ---
   align(center + horizon)[
     #v(-3em)
-    #text(size: 2.2em, weight: "bold", fill: rgb("#111827"))[#title] \
+    #text(size: 2.2em, weight: "bold", fill: rgb("#111827"))[#doc-title] \
     #if subtitle != none {
       v(0.6em)
       text(size: 1.3em, weight: "medium", fill: rgb("#374151"))[#subtitle]
@@ -711,7 +831,8 @@
 
   // Optional Prologue / Foreword page (without redundant author/date footer)
   if prologue != none {
-    heading(level: 1, numbering: none)[Vorwort]
+    let preface-title = _translations.at(lang, default: _translations.at("en")).at("preface")
+    heading(level: 1, numbering: none)[#preface-title]
     v(0.6em)
     prologue
     pagebreak()
