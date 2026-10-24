@@ -8,4 +8,4 @@ description = "A clean, modern, and extensible Typst template for comprehensive 
 repository = "https://github.com/RythenGlyth/typst-script-template"
 keywords = ["lecture-notes", "mathematics", "script", "template", "topology", "lecture-markers", "index"]
 compiler = "0.11.0"
-exclude = [".git*", "*.pdf"]
+exclude = [".git*", "*.pdf", "*.sh"]

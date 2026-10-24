@@ -55,6 +55,9 @@
     "no-notations": "Keine Notationen erfasst.",
     "subject-index": "Stichwortverzeichnis",
     "no-subjects": "Keine Einträge im Stichwortverzeichnis vorhanden.",
+    "version": "Version",
+    "compiled-at": "Kompiliert am",
+    "as-of": "Stand",
   ),
   "en": (
     "definition": "Definition",
@@ -81,6 +84,9 @@
     "no-notations": "No notations recorded.",
     "subject-index": "Subject Index",
     "no-subjects": "No entries in the subject index.",
+    "version": "Version",
+    "compiled-at": "Compiled on",
+    "as-of": "As of",
   ),
 )
 
@@ -308,7 +314,11 @@
   } else if type(d) == datetime {
     if format == auto {
       if d.year() != none and d.month() != none and d.day() != none {
-        d.display("[day].[month].[year]")
+        if d.hour() != none and d.minute() != none {
+          d.display("[day].[month].[year], [hour]:[minute]")
+        } else {
+          d.display("[day].[month].[year]")
+        }
       } else {
         d.display()
       }
@@ -739,6 +749,10 @@
   semester: none,
   university: none,
   date: auto,
+  version: none,
+  date-format: auto,
+  date-prefix: auto,
+  title-footnote: auto,
   lang: "de",
   prologue: none,          // Optional foreword / disclaimer text
   section-symbol: true,    // Prepends § to section numbers if true
@@ -751,11 +765,18 @@
     title
   }
 
+  // Safe document date (Typst document.date requires datetime, auto, or none)
+  let doc-date = if type(date) == datetime or date == auto or date == none {
+    date
+  } else {
+    auto
+  }
+
   // Document metadata
   set document(
     title: doc-title,
     author: author,
-    date: date,
+    date: doc-date,
   )
 
   // Symmetric margins for comfortable digital reading (tablet / PDF reader)
@@ -764,6 +785,13 @@
     margin: (x: 2.5cm, top: 2.8cm, bottom: 2.5cm),
     numbering: "1",
     number-align: center,
+    footer: context {
+      let page-num = counter(page).get().first()
+      // Suppress page number on title page
+      if page-num > 1 {
+        align(center)[#counter(page).display()]
+      }
+    },
     header: context {
       let page-num = counter(page).get().first()
       // Suppress running header on title page and prologue page
@@ -874,6 +902,53 @@
   show link: set text(fill: col-link)
   show ref: it => text(fill: col-link)[#it]
 
+  // Resolve title page footnote (compilation date & versioning note)
+  let resolved-footnote = if title-footnote != auto {
+    title-footnote
+  } else {
+    let date-val = if date == auto {
+      datetime.today()
+    } else {
+      date
+    }
+    let date-str = if date-val != none {
+      format-date(date-val, format: date-format)
+    } else {
+      none
+    }
+
+    let prefix = if date-prefix == auto {
+      tr("compiled-at", lang: lang) + " "
+    } else if date-prefix != none {
+      date-prefix
+    } else {
+      ""
+    }
+
+    let date-part = if date-str != none {
+      [#prefix#date-str]
+    } else {
+      none
+    }
+
+    let ver-part = if version != none {
+      let v-prefix = tr("version", lang: lang)
+      [#v-prefix #version]
+    } else {
+      none
+    }
+
+    if ver-part != none and date-part != none {
+      [#ver-part · #date-part]
+    } else if date-part != none {
+      date-part
+    } else if ver-part != none {
+      ver-part
+    } else {
+      none
+    }
+  }
+
   // --- Title Page ---
   align(center + horizon)[
     #v(-3em)
@@ -898,6 +973,13 @@
     ]
     #v(3em)
   ]
+  if resolved-footnote != none {
+    place(bottom + left)[
+      #line(length: 3.2cm, stroke: 0.5pt + rgb("#cbd5e1"))
+      #v(0.35em)
+      #text(size: 8.5pt, fill: rgb("#64748b"))[#resolved-footnote]
+    ]
+  }
   pagebreak()
 
   // Optional Prologue / Foreword page (without redundant author/date footer)

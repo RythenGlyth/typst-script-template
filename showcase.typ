@@ -15,6 +15,7 @@
   lecturer: "Prof. Dr. N. N.",
   semester: "Wintersemester 202X/2Y",
   university: "Musteruniversität",
+  version: "1.0",
   section-symbol: true,
   hanging-numbers: true, // Outdents § 1 and 1.1 into the margin
   prologue: [

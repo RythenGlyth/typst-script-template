@@ -4,13 +4,17 @@ A clean, modern, and extensible Typst template designed for comprehensive lectur
 
 ## Visual Showcase
 
-| Mathematical Environments & Intuition | Lecture Markers, Theorems & Subproofs |
+| Title Page & Version Footnote | Mathematical Environments & Intuition |
 | :---: | :---: |
-| ![Mathematical Environments & Intuition](assets/showcase-environments.png) | ![Theorems, Claims & Subproofs](assets/showcase-theorems.png) |
+| ![Title Page & Version Footnote](assets/showcase-title.png) | ![Mathematical Environments & Intuition](assets/showcase-environments.png) |
 
-| Fletcher Diagrams & Cross-References | Two-Column Subject Index (Stichwortverzeichnis) |
+| Theorems, Claims & Subproofs | Fletcher Diagrams & Cross-References |
 | :---: | :---: |
-| ![Diagrams & Querverweise](assets/showcase-diagrams.png) | ![Two-Column Subject Index](assets/showcase-index.png) |
+| ![Theorems, Claims & Subproofs](assets/showcase-theorems.png) | ![Diagrams & Querverweise](assets/showcase-diagrams.png) |
+
+| Two-Column Subject Index (Stichwortverzeichnis) | Outdented Lecture Markers |
+| :---: | :---: |
+| ![Two-Column Subject Index](assets/showcase-index.png) | ![Lecture Markers](assets/lecture-markers.png) |
 
 ---
 
@@ -21,6 +25,7 @@ A clean, modern, and extensible Typst template designed for comprehensive lectur
 - **Structured Proofs & Subclaims:** Formal proofs (`#proof[...]`) with end-of-proof Halmos square (`$square$`), plus nested claims (`#claim[...]`) and indented subproofs (`#subproof[...]`).
 - **Outdented Lecture Markers:** Clean horizontal dividers marking lecture starts (`#lecture(...)`), breaks (`#lecture-break(...)`), and endings (`#lecture-end(...)`) with automatic `datetime` formatting.
 - **Hanging Section Numbers:** Optional margin outdenting for section numbers (`§ 1`, `1.1`), aligning heading text perfectly with the paragraph margin.
+- **Title Page Versioning & Footnote:** Subtle, academic footnote on the title page displaying the compilation date (`Kompiliert am [Datum]` / `Compiled on [Date]`) and optional version (`#show: script-doc.with(version: "1.0", ...)`), ensuring readers always know the version status of evolving lecture notes.
 - **Dynamic Notation Index:** Automatically registers mathematical symbols throughout the document via `#notate(symbol, desc)` and compiles a linked reference table (`#notation-index()`).
 - **Alphabetical Subject Index:** Multi-column Stichwortverzeichnis (`#idx("Begriff")`, `#idx("Begriff", sub: "Unterbegriff")`, or content arguments like `#idx([Trennungsaxiom], [$T_2$])`) grouped by initial letter with clickable page links (`#subject-index()`).
 - **Diagram Integration:** Pre-imports [Fletcher](https://typst.app/universe/package/fletcher) and [CeTZ](https://typst.app/universe/package/cetz) for commutative diagrams and geometrical sketches.
@@ -39,6 +44,7 @@ A clean, modern, and extensible Typst template designed for comprehensive lectur
   lecturer: "Prof. Dr. N. N.",
   semester: "Wintersemester 2026/27",
   university: "Musteruniversität",
+  version: "1.0", // Optional version note in title page footnote
   section-symbol: true,
   hanging-numbers: true,
   prologue: [
