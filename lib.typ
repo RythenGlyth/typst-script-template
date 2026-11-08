@@ -554,7 +554,7 @@
   } else {
     none
   }
-  [#metadata((term: term, sub: sub)) <subject-index-item>]
+  [#metadata((term: term, sub: sub))<subject-index-item>]
 }
 
 /// Generates an alphabetical Subject Index (Stichwortverzeichnis).
