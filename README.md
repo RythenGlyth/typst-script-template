@@ -21,7 +21,7 @@ A clean, modern, and extensible Typst template designed for comprehensive lectur
 ## Key Features
 
 - **Unified Mathematical Environments:** Coherent, unified numbering counter across all environments (`#definition`, `#theorem`, `#lemma`, `#proposition`, `#corollary`, `#example`, `#remark`, `#construction`) matching cross-references (`@label` shows e.g. `Definition 1.1`).
-- **Geometric Intuition Blocks:** Dedicated `#intuition[...]` blocks with warm amber styling, ideal for visual concepts in topology and geometry.
+- **Geometric Intuition Blocks:** Dedicated `#intuition[...]` blocks with warm amber styling, ideal for visual concepts in topology and geometry. Supports optional labeling (`<label>`) and cross-referencing (`@label`).
 - **Structured Proofs & Subclaims:** Formal proofs (`#proof[...]`) with end-of-proof Halmos square (`$square$`), plus nested claims (`#claim[...]`) and indented subproofs (`#subproof[...]`).
 - **Outdented Lecture Markers:** Clean horizontal dividers marking lecture starts (`#lecture(...)`), breaks (`#lecture-break(...)`), and endings (`#lecture-end(...)`) with automatic `datetime` formatting.
 - **Hanging Section Numbers:** Optional margin outdenting for section numbers (`§ 1`, `1.1`), aligning heading text perfectly with the paragraph margin.
@@ -94,7 +94,7 @@ A clean, modern, and extensible Typst template designed for comprehensive lectur
 | `#example(title: "...")[...]` | Beispiel | Tol Green (`#228833`) |
 | `#remark(title: "...")[...]` | Bemerkung | Slate Gray (`#555555`) |
 | `#construction(title: "...")[...]`| Konstruktion | Warm Brown (`#78350f`) |
-| `#intuition[...]` | Geometrische Anschauung | Warm Ochre (`#d97706`) |
+| `#intuition(title: "...")[...]` | Geometrische Anschauung | Warm Ochre (`#d97706`) |
 | `#proof[...]` | Beweis mit $square$ | Standard italic with Halmos |
 | `#claim[...]` / `#subproof[...]` | Behauptung & Teilbeweis | Slate card with $diamond.stroked$ |
 

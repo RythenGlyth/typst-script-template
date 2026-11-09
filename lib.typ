@@ -104,6 +104,9 @@
   "remark": "remark",
   "konstruktion": "construction",
   "construction": "construction",
+  "intuition": "intuition",
+  "geometrische intuition": "intuition",
+  "geometric intuition": "intuition",
 )
 
 /// Retrieves a localized string for the specified translation key.
@@ -208,22 +211,53 @@
 #let construction(..args) = math-item("construction", stroke-color: rgb("#78350f"), ..args)
 
 // Geometric Intuition block (specially designed for algebraic topology)
-#let intuition(title: auto, body) = {
-  block(
-    width: 100%,
-    stroke: (left: 2pt + col-intuition),
-    inset: (left: 12pt, right: 6pt, top: 6pt, bottom: 6pt),
-    fill: rgb("#fffbeb").lighten(50%),
-    breakable: true,
-    spacing: 1.4em,
-    [
-      #context {
-        let t = if title == auto { tr("intuition") } else { title }
-        text(weight: "bold", fill: col-intuition, size: 0.95em)[#t:]
-      }
-      #v(0.3em, weak: true)
-      #text(size: 0.95em)[#body]
-    ]
+#let intuition(
+  ..args,
+) = {
+  let named = args.named()
+  let pos = args.pos()
+  let body = if pos.len() > 0 { pos.last() } else { [] }
+  let title = if "title" in named {
+    named.at("title")
+  } else if pos.len() > 1 {
+    pos.first()
+  } else {
+    auto
+  }
+  let breakable = if "breakable" in named { named.at("breakable") } else { true }
+  let item-numbering = if "numbering" in named { named.at("numbering") } else { none }
+  let resolved-numbering = if item-numbering == auto { _math-item-numbering } else { item-numbering }
+  let sup = if "supplement" in named { named.at("supplement") } else { context tr("intuition") }
+  let cap = if "caption" in named { named.at("caption") } else if title != auto { title } else { none }
+
+  figure(
+    kind: "intuition",
+    supplement: sup,
+    numbering: resolved-numbering,
+    caption: cap,
+    outlined: false,
+    block(
+      width: 100%,
+      stroke: (left: 2pt + col-intuition),
+      inset: (left: 12pt, right: 6pt, top: 6pt, bottom: 6pt),
+      fill: rgb("#fffbeb").lighten(50%),
+      breakable: breakable,
+      spacing: 1.4em,
+      align(left)[
+        #context {
+          let t = if title == auto { tr("intuition") } else { title }
+          let num-str = if resolved-numbering != none {
+            let n = counter(figure.where(kind: "intuition")).display(resolved-numbering)
+            [ #n]
+          } else {
+            []
+          }
+          text(weight: "bold", fill: col-intuition, size: 0.95em)[#t#num-str:]
+        }
+        #v(0.3em, weak: true)
+        #text(size: 0.95em)[#body]
+      ]
+    )
   )
 }
 
@@ -845,13 +879,16 @@
   // Headings configuration
   set heading(numbering: "1.1")
 
-  // Make math-item figures breakable across page boundaries and render pure body (suppresses bottom caption)
+  // Make math-item and intuition figures breakable across page boundaries and render pure body (suppresses bottom caption)
   show figure.where(kind: "math-item"): set block(breakable: true)
   show figure.where(kind: "math-item"): it => it.body
+  show figure.where(kind: "intuition"): set block(breakable: true)
+  show figure.where(kind: "intuition"): it => it.body
 
-  // Top-level heading styling & math-item counter reset
+  // Top-level heading styling & math-item / intuition counter reset
   show heading.where(level: 1): it => {
     counter(figure.where(kind: "math-item")).update(0)
+    counter(figure.where(kind: "intuition")).update(0)
     v(2.0em, weak: true)
     if it.numbering != none {
       if hanging-numbers {
@@ -900,7 +937,33 @@
 
   // Links styling: colored without ugly global underline
   show link: set text(fill: col-link)
-  show ref: it => text(fill: col-link)[#it]
+  show ref: it => {
+    let el = it.element
+    if el != none and el.func() == figure and el.kind == "intuition" and el.numbering == none {
+      let label-text = if it.supplement != auto {
+        it.supplement
+      } else {
+        let sup = if el.supplement != auto and el.supplement != none {
+          if type(el.supplement) == function { (el.supplement)() } else { el.supplement }
+        } else {
+          tr("intuition", lang: lang)
+        }
+        if el.caption != none {
+          let cap = el.caption.body
+          if repr(cap) == repr(sup) {
+            [#cap]
+          } else {
+            [#sup (#cap)]
+          }
+        } else {
+          [#sup]
+        }
+      }
+      link(it.target)[#text(fill: col-link)[#label-text]]
+    } else {
+      text(fill: col-link)[#it]
+    }
+  }
 
   // Resolve title page footnote (compilation date & versioning note)
   let resolved-footnote = if title-footnote != auto {

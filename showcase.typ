@@ -45,7 +45,7 @@ Die algebraische Topologie untersucht topologische Räume #idx([Raum], [topologi
 
 #intuition[
   Ein Weg ist die kontinuierliche Bahnkurve eines Teilchens, das sich von Zeitpunkt $t=0$ bis $t=1$ durch den Raum $X$ bewegt. Eine Schleife kehrt zum Ausgangspunkt zurück.
-]
+] <int:path>
 
 #definition(title: "Homotopie von Wegen")[
   Seien $gamma_0, gamma_1: I -> X$ zwei Wege in $X$ mit denselben Endpunkten, also $gamma_0(0) = gamma_1(0) =: x_0$ und $gamma_0(1) = gamma_1(1) =: x_1$.
@@ -179,6 +179,7 @@ Wir prüfen die Querverweise unseres Templates:
 - Aus @def:path und @def:homotopy leiten wir die Fundamentalgruppe ab.
 - Die Berechnung in @thm:pi1-s1 liefert unmittelbar @lem:no-retract und @cor:fta.
 - Wie in @ex:convex erläutert, verschwindet die Fundamentalgruppe für konvexe Räume.
+- Die geometrische Anschauung in @int:path motiviert die kontinuierliche Bewegung von Teilchen.
 
 #pagebreak()
 
